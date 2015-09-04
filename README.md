@@ -1,0 +1,2 @@
+# PokerLord
+Poker NN Bot
