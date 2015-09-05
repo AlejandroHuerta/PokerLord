@@ -1,0 +1,58 @@
+﻿//To make this work we're going to need a good model for the state of the game
+//We have 52 cards + 1 where the card is unknown.
+//Cards go from 2 to 14 (J=11, Q=12, K=13, A=14) and we will use 1 as our unknown
+//those numbers must be normalized by (card - 1) / (14 - 1)
+//another thing to consider is that there are 4 different suits of cards. These will
+//consist of a completely separate input, ie h1, h2, d1, d2, c1, c2, s1, s2
+//where each input can be 0-1 after the card is normalized
+//The next consideration for our game state is what move each player has done up to us.
+//We have the following actions: Check, Call, Raise, Bet, Fold, All-In, these will be numbered
+//1 to 6. We must also consider that a player may be already out at the current state.
+//We will set the state Out as 0.
+//so our normalize function looks like (action - 0) / (6 - 0) or action / 6
+//This now sets our complete state as:
+//[mHCard0,  mHCard1,  mDCard0,  mDCard1,  mCCard0,  mCCard1,  mSCard0,  mSCard1,  mAction
+// p1HCard0, p1HCard1, p1DCard0, p1DCard1, p1CCard0, p1CCard1, p1SCard0, p1SCard1, p1Action,
+// p2HCard0, p2HCard1, p2DCard0, p2DCard1, p2CCard0, p2CCard1, p2SCard0, p2SCard1, p2Action,
+// p3HCard0, p3HCard1, p3DCard0, p3DCard1, p3CCard0, p3CCard1, p3SCard0, p3SCard1, p3Action,
+//...
+// p8HCard0, p8HCard1, p8DCard0, p8DCard1, p8CCard0, p8CCard1, p8SCard0, p8SCard1, p8Action]
+//We need 81 input nodes with this setup and 1 output. The one ouput will have a range of action / 6
+//actions that we can perform.
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace LogParser {
+    class Round {
+        public double[] State { get; private set; } 
+
+        public Round(List<Player> players, List<string> tableCards) {
+            State = new double[17];
+            State.Populate(0);
+
+            var playingAs = players.Find(player => { return player.PlayingAs; });
+            players.Remove(playingAs);
+
+            //First populate with the our state
+            var playingAsState = playingAs.GetStateArray();
+            for(int i = 0; i < 9; i++) {
+                State[i] = playingAsState[i];
+            }
+
+            players.Sort((x, y) => { return Player.NormalizeAction(x.LastAction).CompareTo(Player.NormalizeAction(y.LastAction)); });
+            //Now populate everyone else's state
+            for(int i = 0; i < players.Count; i++) {
+                var playerState = Player.NormalizeAction(players[i].LastAction);
+                State[9 + i] = playerState;
+            }//for
+        }//Round
+
+        public string GetStateAsString() {
+            return String.Join<double>(",", State);
+        }
+    }//Round
+}//LogParser

@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogParser", "LogParser\LogParser.csproj", "{2EED15DB-359E-404F-AE8F-6DC2BFEDAF81}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NNTrainer", "NNTrainer\NNTrainer.csproj", "{E3605A52-99F5-41B3-AC77-D805D9DEC3EF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bot", "Bot\Bot.csproj", "{5708DB72-523A-4B69-9996-F7622209F784}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2EED15DB-359E-404F-AE8F-6DC2BFEDAF81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EED15DB-359E-404F-AE8F-6DC2BFEDAF81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2EED15DB-359E-404F-AE8F-6DC2BFEDAF81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2EED15DB-359E-404F-AE8F-6DC2BFEDAF81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3605A52-99F5-41B3-AC77-D805D9DEC3EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3605A52-99F5-41B3-AC77-D805D9DEC3EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3605A52-99F5-41B3-AC77-D805D9DEC3EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3605A52-99F5-41B3-AC77-D805D9DEC3EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5708DB72-523A-4B69-9996-F7622209F784}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5708DB72-523A-4B69-9996-F7622209F784}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5708DB72-523A-4B69-9996-F7622209F784}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5708DB72-523A-4B69-9996-F7622209F784}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
