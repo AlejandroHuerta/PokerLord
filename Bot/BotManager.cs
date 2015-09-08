@@ -1,4 +1,5 @@
 ﻿using Bot.Messages;
+using LogParser;
 using System;
 using System.Collections.Generic;
 using System.Linq;

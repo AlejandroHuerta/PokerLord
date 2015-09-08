@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Bot.Messages;
+using LogParser;
 
 namespace Bot {
     class Bot : BotManager.BotInterface {
@@ -87,12 +88,9 @@ namespace Bot {
                 state[9 + i] = playerState;
             }//for
 
-            var action = Player.DoubleToAction(HiveMind.Instance.Compute(state));
+            var computed = HiveMind.Instance.Compute(state);
+            var action = Player.DoubleToIdeal(computed);
             Console.WriteLine("Computed action: {0}", action);
-
-            if (action == Player.Action.Out) {
-                action = Player.Action.Fold;
-            }
 
             int amount = 0;
             switch (action) {
@@ -104,6 +102,10 @@ namespace Bot {
                 break;
             case Player.Action.Raise:
                 amount = minBet * 2;
+                break;
+            case Player.Action.Out:
+                action = Player.Action.Fold;
+                Console.WriteLine("Out should not be possible! HiveMind returned {0}", computed);
                 break;
             }
 

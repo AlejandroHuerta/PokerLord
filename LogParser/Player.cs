@@ -7,8 +7,8 @@
 //where each input can be 0-1 after the card is normalized
 //The next consideration for our game state is what move each player has done up to us.
 //We have the following actions: Check, Call, Raise, Bet, Fold, All-In, these will be numbered
-//1 to 6. We must also consider that a player may be already out at the current state.
-//We will set the state Out as 0.
+//0 to 5. We must also consider that a player may be already out at the current state.
+//We will set the state Out as 6.
 //so our normalize function looks like (action - 0) / (6 - 0) or action / 6
 //This now sets our complete state as:
 //[mHCard0,  mHCard1,  mDCard0,  mDCard1,  mCCard0,  mCCard1,  mSCard0,  mSCard1,  mAction
@@ -17,7 +17,7 @@
 // p3HCard0, p3HCard1, p3DCard0, p3DCard1, p3CCard0, p3CCard1, p3SCard0, p3SCard1, p3Action,
 //...
 // p8HCard0, p8HCard1, p8DCard0, p8DCard1, p8CCard0, p8CCard1, p8SCard0, p8SCard1, p8Action]
-//We need 81 input nodes with this setup and 1 output. The one ouput will have a range of action / 6
+//We need 81 input nodes with this setup and 1 output. The one ouput will have a range of action / 5
 //actions that we can perform.
 
 using System;
@@ -28,37 +28,48 @@ using System.Threading.Tasks;
 
 namespace LogParser {
     public class Player {
-        public enum Action { Out = 0, Check = 1, Call = 2, Raise = 3, Bet = 4, Fold = 5, AllIn = 6 }
+        public enum Action { Check = 0, Call = 1, Raise = 2, Bet = 3, Fold = 4, AllIn = 5, Out = 6 }
 
         public string Name { get; private set; }
         public List<string> Cards = new List<string>();
         public bool PlayingAs { get; private set; }
         public Action LastAction { get; set; }
+        public int Balance { get; set; }
+        public int SeatNumber { get; set; }
 
-        public Player(string name, bool playingAs) {
+        public Player(string name, bool playingAs, int seatNumber = 0) {
             Name = name;
             Cards.AddRange(new string[] { "**", "**" });
             LastAction = Action.Out;
             PlayingAs = playingAs;
+            SeatNumber = seatNumber;
         }
 
-        public Action DoubleToAction(double value) {
-            return (Action)(int)Math.Round(value * 6.0);
+        public static Action DoubleToIdeal(double value) {
+            return (Action)(int)Math.Round(value * 5.0);
         }
 
         public static double NormalizeAction(Action action) {
             return (int)action / 6.0;
         }
 
+        public static double NormalizeIdeal(Action ideal) {
+            return (int)ideal / 5.0;
+        }
+
         public double[] GetStateArray() {
             var state = new double[9];
             state.Populate(0);
 
-            state[8] = NormalizeAction(LastAction);
+            if (PlayingAs) {
+                state[8] = NormalizeIdeal(LastAction);
+            } else {
+                state[8] = NormalizeAction(LastAction);
+            }//else
 
             if (Cards.Exists(card => { return card == "**"; })) {
                 return state;
-            }
+            }//if
 
             var hIndex = 0;
             var dIndex = 2;

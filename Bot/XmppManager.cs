@@ -1,6 +1,7 @@
 ﻿#define DEVELOPMENT
 
 using Bot.Messages;
+using LogParser;
 using Matrix.Xmpp;
 using Matrix.Xmpp.Client;
 using Newtonsoft.Json;
