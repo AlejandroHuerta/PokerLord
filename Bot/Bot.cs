@@ -68,7 +68,7 @@ namespace Bot {
         }
 
         void Act() {
-            var state = new double[17];
+            var state = new double[36];
             state.Populate(0);
 
             var tempPlayers = new List<Player>(players);
@@ -77,15 +77,18 @@ namespace Bot {
 
             //First populate with the our state
             var playingAsState = playingAs.GetStateArray();
-            for (int i = 0; i < 9; i++) {
+            for (int i = 0; i < 8; i++) {
                 state[i] = playingAsState[i];
-            }
+            }//for
 
-            tempPlayers.Sort((x, y) => { return Player.NormalizeAction(x.LastAction).CompareTo(Player.NormalizeAction(y.LastAction)); });
-            //Now populate everyone else's state
-            for (int i = 0; i < tempPlayers.Count; i++) {
-                var playerState = Player.NormalizeAction(tempPlayers[i].LastAction);
-                state[9 + i] = playerState;
+            var otherPlayersArray = Round.GetOtherPlayersArray(tempPlayers);
+            for (int i = 0; i < otherPlayersArray.Length; i++) {
+                state[8 + i] = otherPlayersArray[i];
+            }//for
+
+            var tableArray = Round.GetTableArray(tableCards);
+            for (int i = 0; i < tableArray.Length; i++) {
+                state[16 + i] = tableArray[i];
             }//for
 
             var computed = HiveMind.Instance.Compute(state);

@@ -37,8 +37,8 @@ namespace NNTrainer {
             var nnIdeal = outputs.ToArray();
 
             var network = new BasicNetwork();
-            network.AddLayer(new BasicLayer(null, true, 16));
-            network.AddLayer(new BasicLayer(new ActivationSigmoid(), true, 300));
+            network.AddLayer(new BasicLayer(null, true, 36));
+            network.AddLayer(new BasicLayer(new ActivationSigmoid(), true, 150));
             network.AddLayer(new BasicLayer(new ActivationSigmoid(), false, 1));
             network.Structure.FinalizeStructure();
             network.Reset();

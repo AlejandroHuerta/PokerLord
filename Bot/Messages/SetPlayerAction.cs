@@ -20,7 +20,7 @@ namespace Bot.Messages {
             public int balance { get; set; }
             public int playerChipstackAmount { get; set; }
             public int callAmount { get; set; }
-            public int pot { get; set; }
+            public int? pot { get; set; }
             public List<int?> contributedThisRound { get; set; }
             public int minimumBet { get; set; }
         }

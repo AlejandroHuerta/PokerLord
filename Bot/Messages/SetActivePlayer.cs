@@ -15,7 +15,7 @@ namespace Bot.Messages {
             public string action { get; set; }
             public int seatNumber { get; set; }
             public bool showMuck { get; set; }
-            public int pot { get; set; }
+            public int? pot { get; set; }
             public int callAmount { get; set; }
             public List<int?> contributedThisRound { get; set; }
             public int minimumBet { get; set; }

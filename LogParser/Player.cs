@@ -94,7 +94,7 @@ namespace LogParser {
             return state;
         }//GetStateArray
 
-        double GetRankValue(string rank) {
+        public static double GetRankValue(string rank) {
             switch(rank) {
             case "A":
                 return NormalizeRank(14);
@@ -111,7 +111,7 @@ namespace LogParser {
             }//switch
         }//GetRankValue
 
-        double NormalizeRank(double value) {
+        static double NormalizeRank(double value) {
             return (value - 1) / (14 - 1);
         }
     }
