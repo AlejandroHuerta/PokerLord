@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Bot.Messages;
 using LogParser;
+using System.Linq;
 
 namespace Bot {
     class Bot : BotManager.BotInterface {
@@ -91,33 +92,38 @@ namespace Bot {
                 state[16 + i] = tableArray[i];
             }//for
             
-            var allowedActions = Round.AllowedActionsAsDouble(tempPlayers);
+            var allowedActionsAsDouble = Round.AllowedActionsAsDouble(tempPlayers);
             for (int i = 0; i < 3; i++) {
-                state[36 + i] = allowedActions[i];
+                state[36 + i] = allowedActionsAsDouble[i];
             }//for
 
             var computed = HiveMind.Instance.Compute(state);
             var action = Player.DoubleToIdeal(computed);
             Console.WriteLine("Computed action: {0}", action);
 
-            int amount = 0;
-            switch (action) {
-            case Player.Action.AllIn:
-                amount = playingAs.Balance;
-                break;
-            case Player.Action.Bet:
-                amount = minBet;
-                break;
-            case Player.Action.Raise:
-                amount = minBet * 2;
-                break;
-            case Player.Action.Out:
-                action = Player.Action.Fold;
-                Console.WriteLine("Out should not be possible! HiveMind returned {0}", computed);
-                break;
-            }
+            var allowedActions = Round.AllowedActions(tempPlayers);
+            if (allowedActions.Contains(action)) {
+                int amount = 0;
+                switch (action) {
+                case Player.Action.AllIn:
+                    amount = playingAs.Balance;
+                    break;
+                case Player.Action.Bet:
+                    amount = minBet;
+                    break;
+                case Player.Action.Raise:
+                    amount = minBet * 2;
+                    break;
+                case Player.Action.Out:
+                    action = Player.Action.Fold;
+                    Console.WriteLine("Out should not be possible! HiveMind returned {0}", computed);
+                    break;
+                }//switch
 
-            XmppManager.Instance.sendAction(action, TableId, amount);
-        }
-    }
-}
+                XmppManager.Instance.sendAction(action, TableId, amount);
+            } else {
+                Console.WriteLine("This is not an allowed action and will not be sent!");
+            }//else            
+        }//Act
+    }//Bot
+}//Bot
