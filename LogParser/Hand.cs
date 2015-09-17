@@ -13,7 +13,7 @@ namespace LogParser {
 
         static Regex postedRegex = new Regex(@"[a-z0-9]+ posted \$[0-9]+.$");
 
-        static Regex isActionRegex = new Regex(@"[a-z0-9]+ (folded|went all-in with \$[0-9]+|called \$[0-9]+|checked|bet \$[0-9]+|raised to \$[0-9]+).$");
+        static Regex isActionRegex = new Regex(@"[a-z0-9]+ (folded|went all-in with \$[0-9]+|called \$[0-9]+|checked|bet \$[0-9]+|raised to \$[0-9]+|posted \$[0-9]+).$");
         static Regex foldedRegex = new Regex(@"[a-z0-9]+ folded.$");
         static Regex allinRegex = new Regex(@"[a-z0-9]+ went all-in with \$[0-9]+.$");
         static Regex calledRegex = new Regex(@"[a-z0-9]+ called \$[0-9]+.");
@@ -34,8 +34,6 @@ namespace LogParser {
 
         delegate void LineParser(string line);
         LineParser currentParser;
-
-        int postedCount = 2;
 
         public Hand(List<string> lines) {
             playingAs = "n/a";
@@ -77,20 +75,9 @@ namespace LogParser {
                 players.Add(player);
             }
             else if (dealerPositionRegex.IsMatch(line)) {
-                currentParser = IgnorePostedParser;
+                currentParser = BuildStateParser;
             }//else if
         }//GettingPlayersParser
-
-        void IgnorePostedParser(string line) {
-            if (postedRegex.IsMatch(line)) {
-                if (postedCount == 1) {
-                    currentParser = BuildStateParser;
-                }
-                else {
-                    postedCount--;
-                }//else
-            }//if
-        }//IgnorePostedParser
 
         void BuildStateParser(string line) {
             string name;
@@ -110,6 +97,8 @@ namespace LogParser {
                     action = Player.Action.Bet;
                 } else if (raisedRegex.IsMatch(line)) {
                     action = Player.Action.Raise;
+                } else if (postedRegex.IsMatch(line)) {
+                    action = Player.Action.Posted;
                 } else {
                     action = Player.Action.Out;
                     Console.WriteLine("Unknown action performed!");
@@ -118,7 +107,7 @@ namespace LogParser {
 
                 players.Find(player => { return player.Name == name; }).LastAction = action;
 
-                if (name == playingAs) {
+                if (name == playingAs && action != Player.Action.Posted) {
                     rounds.Add(new Round(new List<Player>(players), tableCards));
                 }//if
             } else if (dealingRegex.IsMatch(line)) {

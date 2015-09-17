@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace LogParser {
     class Program {
         static void Main(string[] args) {
-            string[] filePaths = Directory.GetFiles(@"G:/game_logs_aug15", "*.log", SearchOption.AllDirectories);
+            string[] filePaths = Directory.GetFiles(@"G:/gamelogs", "*.log", SearchOption.AllDirectories);
             var tournaments = new List<Tournament>();
 
             var regex = new Regex(@"[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}.log$");

@@ -88,6 +88,12 @@ namespace Bot {
             case "RAISE":
                 action = Player.Action.Raise;
                 break;
+            case "POST":
+                action = Player.Action.Posted;
+                break;
+            default:
+                Console.WriteLine("Action {0} is not being handled", message.message.actionName);
+                break;
             }//switch
 
             var bot = bots.Find(b => { return b.GetTableId() == message.tableId; });

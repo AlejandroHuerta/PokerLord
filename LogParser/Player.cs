@@ -28,7 +28,7 @@ using System.Threading.Tasks;
 
 namespace LogParser {
     public class Player {
-        public enum Action { Check = 0, Call = 1, Raise = 2, Bet = 3, Fold = 4, AllIn = 5, Out = 6 }
+        public enum Action { Check = 0, Call = 1, Raise = 2, Bet = 3, Fold = 4, AllIn = 5, Out = 6, Posted = 7 }
 
         public string Name { get; private set; }
         public List<string> Cards = new List<string>();
@@ -50,7 +50,7 @@ namespace LogParser {
         }
 
         public static double NormalizeAction(Action action) {
-            return (int)action / 6.0;
+            return (int)action / 7.0;
         }
 
         public static double NormalizeIdeal(Action ideal) {
