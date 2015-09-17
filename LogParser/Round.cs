@@ -20,8 +20,9 @@
 // p3Action,
 //...
 // p8Action,
-//tableCards x 20]
-//We need 36 input nodes with this setup and 1 output. The one ouput will have a range of action / 5
+//tableCards x 20,
+//allowedActions x 3]
+//We need 39 input nodes with this setup and 1 output. The one ouput will have a range of action / 5
 //actions that we can perform.
 
 using System;
@@ -39,7 +40,7 @@ namespace LogParser {
         }//Round
 
         public static double[] BuildTrainingState(List<Player> players, List<string> tableCards) {
-            var state = new double[37];
+            var state = new double[40];
             state.Populate(0);
 
             var playingAs = players.Find(player => { return player.PlayingAs; });
@@ -60,6 +61,12 @@ namespace LogParser {
             var tableArray = GetTableArray(tableCards);
             for (int i = 0; i < tableArray.Length; i++) {
                 state[17 + i] = tableArray[i];
+            }//for
+
+            //Populate allowedActions
+            var allowedActions = AllowedActionsAsDouble(players);
+            for(int i = 0; i < 3; i++) {
+                state[37 + i] = allowedActions[i];
             }//for
 
             return state;
@@ -107,5 +114,25 @@ namespace LogParser {
         public string GetStateAsString() {
             return String.Join<double>(",", State);
         }
+
+        public static Player.Action[] AllowedActions(List<Player> otherPlayers) {
+            Player.Action[] allowedActions;
+            if (otherPlayers.Exists(p => p.LastAction == Player.Action.AllIn)) {
+                allowedActions = new Player.Action[3] { Player.Action.Fold, Player.Action.Call, Player.Action.AllIn };
+            } else if (otherPlayers.Exists(p => p.LastAction == Player.Action.Bet) ||
+                otherPlayers.Exists(p => p.LastAction == Player.Action.Raise) ||
+                otherPlayers.Exists(p => p.LastAction == Player.Action.Posted)) {
+                allowedActions = new Player.Action[3] { Player.Action.Fold, Player.Action.Call, Player.Action.Raise };
+            } else {
+                allowedActions = new Player.Action[3] { Player.Action.Fold, Player.Action.Check, Player.Action.Bet };
+            }//else
+
+            return allowedActions;
+        }//AllowedActions
+
+        public static double[] AllowedActionsAsDouble(List<Player> otherPlayers) {
+            var allowedActions = AllowedActions(otherPlayers);
+            return new double[3] { Player.NormalizeAction(allowedActions[0]), Player.NormalizeAction(allowedActions[1]), Player.NormalizeAction(allowedActions[2]) };
+        }//AllowedActionsAsDouble
     }//Round
 }//LogParser

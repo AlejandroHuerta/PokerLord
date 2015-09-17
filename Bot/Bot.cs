@@ -68,7 +68,7 @@ namespace Bot {
         }
 
         void Act() {
-            var state = new double[36];
+            var state = new double[39];
             state.Populate(0);
 
             var tempPlayers = new List<Player>(players);
@@ -89,6 +89,11 @@ namespace Bot {
             var tableArray = Round.GetTableArray(tableCards);
             for (int i = 0; i < tableArray.Length; i++) {
                 state[16 + i] = tableArray[i];
+            }//for
+            
+            var allowedActions = Round.AllowedActionsAsDouble(tempPlayers);
+            for (int i = 0; i < 3; i++) {
+                state[36 + i] = allowedActions[i];
             }//for
 
             var computed = HiveMind.Instance.Compute(state);
