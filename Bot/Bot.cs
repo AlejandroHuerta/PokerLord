@@ -71,7 +71,7 @@ namespace Bot {
         }
 
         void Act() {
-            var state = new double[39];
+            var state = new double[40];
             state.Populate(0);
 
             var tempPlayers = new List<Player>(players);
@@ -95,7 +95,7 @@ namespace Bot {
             }//for
             
             var allowedActionsAsDouble = Round.AllowedActionsAsDouble(tempPlayers);
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < 4; i++) {
                 state[36 + i] = allowedActionsAsDouble[i];
             }//for
 

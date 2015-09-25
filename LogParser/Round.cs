@@ -21,7 +21,7 @@
 //...
 // p8Action,
 //tableCards x 20,
-//allowedActions x 3]
+//allowedActions x 4]
 //We need 39 input nodes with this setup and 1 output. The one ouput will have a range of action / 5
 //actions that we can perform.
 
@@ -40,7 +40,7 @@ namespace LogParser {
         }//Round
 
         public static double[] BuildTrainingState(List<Player> players, List<string> tableCards) {
-            var state = new double[40];
+            var state = new double[41];
             state.Populate(0);
 
             var playingAs = players.Find(player => { return player.PlayingAs; });
@@ -65,7 +65,7 @@ namespace LogParser {
 
             //Populate allowedActions
             var allowedActions = AllowedActionsAsDouble(players);
-            for(int i = 0; i < 3; i++) {
+            for(int i = 0; i < 4; i++) {
                 state[37 + i] = allowedActions[i];
             }//for
 
@@ -118,13 +118,13 @@ namespace LogParser {
         public static Player.Action[] AllowedActions(List<Player> otherPlayers) {
             Player.Action[] allowedActions;
             if (otherPlayers.Exists(p => p.LastAction == Player.Action.AllIn)) {
-                allowedActions = new Player.Action[3] { Player.Action.Fold, Player.Action.Call, Player.Action.AllIn };
+                allowedActions = new Player.Action[4] { Player.Action.Fold, Player.Action.Call, Player.Action.AllIn, Player.Action.AllIn };
             } else if (otherPlayers.Exists(p => p.LastAction == Player.Action.Bet) ||
                 otherPlayers.Exists(p => p.LastAction == Player.Action.Raise) ||
                 otherPlayers.Exists(p => p.LastAction == Player.Action.Posted)) {
-                allowedActions = new Player.Action[3] { Player.Action.Fold, Player.Action.Call, Player.Action.Raise };
+                allowedActions = new Player.Action[4] { Player.Action.Fold, Player.Action.Call, Player.Action.Raise, Player.Action.AllIn };
             } else {
-                allowedActions = new Player.Action[3] { Player.Action.Fold, Player.Action.Check, Player.Action.Bet };
+                allowedActions = new Player.Action[4] { Player.Action.Fold, Player.Action.Check, Player.Action.Bet, Player.Action.AllIn };
             }//else
 
             return allowedActions;
@@ -132,7 +132,11 @@ namespace LogParser {
 
         public static double[] AllowedActionsAsDouble(List<Player> otherPlayers) {
             var allowedActions = AllowedActions(otherPlayers);
-            return new double[3] { Player.NormalizeAction(allowedActions[0]), Player.NormalizeAction(allowedActions[1]), Player.NormalizeAction(allowedActions[2]) };
+            return new double[4] { Player.NormalizeAction(allowedActions[0]),
+                Player.NormalizeAction(allowedActions[1]),
+                Player.NormalizeAction(allowedActions[2]),
+                Player.NormalizeAction(allowedActions[3])
+            };
         }//AllowedActionsAsDouble
     }//Round
 }//LogParser
