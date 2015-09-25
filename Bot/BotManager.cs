@@ -52,7 +52,11 @@ namespace Bot {
                 bots.Add(bot);
             }
             bot.SetPlayers(message.message.players);
-        }
+
+            if (message.message.activePlayer.seatNumber != null) {
+                bot.ActivePlayer((int)message.message.activePlayer.seatNumber);
+            }//if
+        }//TableState
 
         public void BeginGame(BeginGame message) {
             GetBot(message.tableId)?.ResetActions();

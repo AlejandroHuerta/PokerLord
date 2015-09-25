@@ -44,11 +44,13 @@ namespace Bot {
 
         public void ActivePlayer(int seat) {
             var activePlayer = players.Find(player => { return player.SeatNumber == seat; });
-            Console.WriteLine(activePlayer.Name + " is active.");
-            if (activePlayer.PlayingAs) {
-                Act();
-            }
-        }
+            if (activePlayer != null) {
+                Console.WriteLine(activePlayer.Name + " is active.");
+                if (activePlayer.PlayingAs) {
+                    Act();
+                }//if
+            }//if
+        }//ActivePlayer
 
         public void SetPlayerAction(int seat, Player.Action action) {
             var player = players.Find(p => { return p.SeatNumber == seat; });

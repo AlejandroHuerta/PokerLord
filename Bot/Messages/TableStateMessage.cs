@@ -32,7 +32,7 @@ namespace Bot.Messages {
             public string externalTournamentId { get; set; }
 
             public class ActivePlayer {
-                public int seatNumber { get; set; }
+                public int? seatNumber { get; set; }
                 public Timeout timeout { get; set; }
 
                 public class Timeout {
