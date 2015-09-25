@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NNTrainer", "NNTrainer\NNTr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bot", "Bot\Bot.csproj", "{5708DB72-523A-4B69-9996-F7622209F784}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BotGUI", "BotGUI\BotGUI.csproj", "{F637CCE3-54D7-4C6C-A425-87CDEF813497}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{5708DB72-523A-4B69-9996-F7622209F784}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5708DB72-523A-4B69-9996-F7622209F784}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5708DB72-523A-4B69-9996-F7622209F784}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F637CCE3-54D7-4C6C-A425-87CDEF813497}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F637CCE3-54D7-4C6C-A425-87CDEF813497}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F637CCE3-54D7-4C6C-A425-87CDEF813497}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F637CCE3-54D7-4C6C-A425-87CDEF813497}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
