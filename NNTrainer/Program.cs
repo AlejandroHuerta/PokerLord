@@ -25,9 +25,8 @@ namespace NNTrainer {
                 var lineOutput = new List<double>();
 
                 var weights = line.Split(new char[] { ',' });
-                lineInput.AddRange(weights.Take(8).Select(value => double.Parse(value)));
-                lineOutput.Add(double.Parse(weights[8]));
-                lineInput.AddRange(weights.Skip(9).Select(value => double.Parse(value)));
+                lineInput.AddRange(weights.Take(37).Select(value => double.Parse(value)));
+                lineOutput.Add(double.Parse(weights[37]));
 
                 inputs.Add(lineInput.ToArray());
                 outputs.Add(lineOutput.ToArray());
@@ -37,7 +36,7 @@ namespace NNTrainer {
             var nnIdeal = outputs.ToArray();
 
             var network = new BasicNetwork();
-            network.AddLayer(new BasicLayer(null, true, 40));
+            network.AddLayer(new BasicLayer(null, true, 37));
             network.AddLayer(new BasicLayer(new ActivationSigmoid(), true, 150));
             network.AddLayer(new BasicLayer(new ActivationSigmoid(), false, 1));
             network.Structure.FinalizeStructure();

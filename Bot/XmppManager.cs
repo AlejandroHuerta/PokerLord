@@ -31,6 +31,7 @@ namespace Bot {
             void SetPlayerAction(SetPlayerAction message);
             void Eliminated(EliminatedMessage message);
             void DealCommunityCards(DealCommunityCards message);
+            void DealHoleCards(DealHoleCards message);
         }
 
         static private XmppManager instance;
@@ -113,6 +114,10 @@ namespace Bot {
                 break;
             case "CHAT":
                 Console.WriteLine(GrabBody(e.Message.Body));
+                break;
+            case "DEAL_HOLE_CARDS":
+                DealHoleCards dealHoleCards = JsonConvert.DeserializeObject<DealHoleCards>(e.Message.Body);
+                messageHandler.DealHoleCards(dealHoleCards);
                 break;
             default:
                 break;

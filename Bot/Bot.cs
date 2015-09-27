@@ -13,6 +13,11 @@ namespace Bot {
         string playingAs;
 
         List<Player> players = new List<Player>();
+        public List<Player> Players {
+            get {
+                return players;
+            }
+        }
 
         int minBet = 0;
 
@@ -70,62 +75,49 @@ namespace Bot {
             tableCards = cards;
         }
 
+        public void ClearTableCards() {
+            tableCards.Clear();
+        }
+        
+        public void PlayerCards(List<List<string>> cards) {
+            for(int i = 0; i < cards.Count; i++) {
+                if (cards[i] != null) {
+                    players.Find(p => p.SeatNumber == i).Cards = cards[i];
+                }
+            }//for
+        }//PlayerCards
+
         void Act() {
-            var state = new double[40];
-            state.Populate(0);
-
             var tempPlayers = new List<Player>(players);
-            var playingAs = tempPlayers.Find(player => { return player.PlayingAs; });
-            tempPlayers.Remove(playingAs);
 
-            //First populate with the our state
-            var playingAsState = playingAs.GetStateArray();
-            for (int i = 0; i < 8; i++) {
-                state[i] = playingAsState[i];
-            }//for
-
-            var otherPlayersArray = Round.GetOtherPlayersArray(tempPlayers);
-            for (int i = 0; i < otherPlayersArray.Length; i++) {
-                state[8 + i] = otherPlayersArray[i];
-            }//for
-
-            var tableArray = Round.GetTableArray(tableCards);
-            for (int i = 0; i < tableArray.Length; i++) {
-                state[16 + i] = tableArray[i];
-            }//for
-            
-            var allowedActionsAsDouble = Round.AllowedActionsAsDouble(tempPlayers);
-            for (int i = 0; i < 4; i++) {
-                state[36 + i] = allowedActionsAsDouble[i];
-            }//for
+            var state = Round.BuildState(tempPlayers, tableCards);
 
             var computed = HiveMind.Instance.Compute(state);
             var action = Player.DoubleToIdeal(computed);
             Console.WriteLine("Computed action: {0}", action);
+            
+            int amount = 0;
+            switch (action) {
+            case Player.Action.AllIn:
+                amount = players.Find(player => player.PlayingAs).Balance;
+                break;
+            case Player.Action.Bet:
+                amount = minBet;
+                break;
+            case Player.Action.Raise:
+                amount = minBet * 2;
+                break;
+            case Player.Action.Out:
+                action = Player.Action.Fold;
+                Console.WriteLine("Out should not be possible! HiveMind returned {0}", computed);
+                break;
+            }//switch
 
-            var allowedActions = Round.AllowedActions(tempPlayers);
-            if (allowedActions.Contains(action)) {
-                int amount = 0;
-                switch (action) {
-                case Player.Action.AllIn:
-                    amount = playingAs.Balance;
-                    break;
-                case Player.Action.Bet:
-                    amount = minBet;
-                    break;
-                case Player.Action.Raise:
-                    amount = minBet * 2;
-                    break;
-                case Player.Action.Out:
-                    action = Player.Action.Fold;
-                    Console.WriteLine("Out should not be possible! HiveMind returned {0}", computed);
-                    break;
-                }//switch
-
-                XmppManager.Instance.sendAction(action, TableId, amount);
-            } else {
-                Console.WriteLine("This is not an allowed action and will not be sent!");
-            }//else            
+            XmppManager.Instance.sendAction(action, TableId, amount);
         }//Act
+
+        public override string ToString() {
+            return String.Format("Table Cards: {0,-20}", '[' + string.Join("][", tableCards) + ']') + "\n" + string.Join("\n", players.Select(p => p.ToString()));
+        }
     }//Bot
 }//Bot

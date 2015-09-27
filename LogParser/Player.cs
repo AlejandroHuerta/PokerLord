@@ -28,7 +28,7 @@ using System.Threading.Tasks;
 
 namespace LogParser {
     public class Player {
-        public enum Action { Check = 0, Call = 1, Raise = 2, Bet = 3, Fold = 4, AllIn = 5, Out = 6, Posted = 7 }
+        public enum Action { Check = 0, Call = 1, Raise = 2, Bet = 3, Fold = 4, AllIn = 5, Out = 6, SmallBlind = 7, BigBlind = 8 }
 
         public string Name { get; private set; }
         public List<string> Cards = new List<string>();
@@ -50,49 +50,12 @@ namespace LogParser {
         }
 
         public static double NormalizeAction(Action action) {
-            return (int)action / 7.0;
+            return (int)action / 8.0;
         }
 
         public static double NormalizeIdeal(Action ideal) {
             return (int)ideal / 5.0;
         }
-
-        public double[] GetStateArray() {
-            var state = new double[9];
-            state.Populate(0);
-
-            if (PlayingAs) {
-                state[8] = NormalizeIdeal(LastAction);
-            } else {
-                state[8] = NormalizeAction(LastAction);
-            }//else
-
-            if (Cards.Exists(card => { return card == "**"; })) {
-                return state;
-            }//if
-
-            var hIndex = 0;
-            var dIndex = 2;
-            var cIndex = 4;
-            var sIndex = 6;
-            for(int i = 0; i < 2; i++) {
-                if (Cards[i].Contains('h')) {
-                    state[hIndex] = GetRankValue(Cards[i].Remove(1));
-                    hIndex++;
-                } else if (Cards[i].Contains('d')) {
-                    state[dIndex] = GetRankValue(Cards[i].Remove(1));
-                    dIndex++;
-                } else if (Cards[i].Contains('c')) {
-                    state[cIndex] = GetRankValue(Cards[i].Remove(1));
-                    cIndex++;
-                } else {
-                    state[sIndex] = GetRankValue(Cards[i].Remove(1));
-                    sIndex++;
-                }//else
-            }//for
-
-            return state;
-        }//GetStateArray
 
         public static double GetRankValue(string rank) {
             switch(rank) {
@@ -113,6 +76,10 @@ namespace LogParser {
 
         static double NormalizeRank(double value) {
             return (value - 1) / (14 - 1);
+        }
+
+        public override string ToString() {
+            return string.Format("Name: {0,-12} Seat Number: {1} Cards: [{2}][{3}] Balance: {4}", Name, SeatNumber, Cards[0], Cards.Count > 1 ? Cards[1] : "--", Balance);
         }
     }
 }

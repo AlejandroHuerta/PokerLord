@@ -17,6 +17,9 @@ namespace Bot {
             void TableCards(List<string> cards);
             void SetBalance(int seat, int balance);
             void SetMinimumBet(int minBet);
+            List<Player> Players { get; }
+            void PlayerCards(List<List<string>> cards);
+            void ClearTableCards();
         }
 
         private static BotManager instance;
@@ -60,6 +63,7 @@ namespace Bot {
 
         public void BeginGame(BeginGame message) {
             GetBot(message.tableId)?.ResetActions();
+            GetBot(message.tableId)?.ClearTableCards();
         }//BeginGame
 
         public void SetPlayers(SetPlayers message) {
@@ -72,6 +76,11 @@ namespace Bot {
 
         public void SetPlayerAction(SetPlayerAction message) {
             Player.Action action = Player.Action.Out;
+
+            var bot = bots.Find(b => { return b.GetTableId() == message.tableId; });
+            if (bot == null) {
+                return;
+            }//if
 
             switch (message.message.actionName) {
             case "CALL":
@@ -93,17 +102,21 @@ namespace Bot {
                 action = Player.Action.Raise;
                 break;
             case "POST":
-                action = Player.Action.Posted;
+                if (bot.Players.Exists(p => p.LastAction == Player.Action.SmallBlind)) {
+                    action = Player.Action.BigBlind;
+                } else {
+                    action = Player.Action.SmallBlind;
+                }//else
                 break;
             default:
                 Console.WriteLine("Action {0} is not being handled", message.message.actionName);
                 break;
             }//switch
-
-            var bot = bots.Find(b => { return b.GetTableId() == message.tableId; });
+            
             bot?.SetPlayerAction(message.message.seatNumber, action);
             bot?.SetBalance(message.message.seatNumber, message.message.balance);
             bot?.SetMinimumBet(message.message.minimumBet);
+            Console.WriteLine(bot?.ToString());
         }
 
         public void Eliminated(EliminatedMessage message) {
@@ -112,7 +125,15 @@ namespace Bot {
         }//Eliminated
 
         public void DealCommunityCards(DealCommunityCards message) {
-            bots.Find(bot => { return bot.GetTableId() == message.tableId; })?.TableCards(message.message.cards);
+            var bot = GetBot(message.tableId);
+            bot?.TableCards(message.message.cards);
+            Console.WriteLine(bot?.ToString());
+        }
+
+        public void DealHoleCards(DealHoleCards message) {
+            var bot = GetBot(message.tableId);
+            bot?.PlayerCards(message.message.cards);
+            Console.WriteLine(bot?.ToString());
         }
 
         BotInterface GetBot(string tableId) {

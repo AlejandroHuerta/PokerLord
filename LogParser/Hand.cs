@@ -98,18 +98,22 @@ namespace LogParser {
                 } else if (raisedRegex.IsMatch(line)) {
                     action = Player.Action.Raise;
                 } else if (postedRegex.IsMatch(line)) {
-                    action = Player.Action.Posted;
+                    if (players.Exists(p => p.LastAction == Player.Action.SmallBlind)) {
+                        action = Player.Action.BigBlind;
+                    } else {
+                        action = Player.Action.SmallBlind;
+                    }//else
                 } else {
                     action = Player.Action.Out;
                     Console.WriteLine("Unknown action performed!");
                     Console.WriteLine(line);
                 }//else
-
-                players.Find(player => { return player.Name == name; }).LastAction = action;
-
-                if (name == playingAs && action != Player.Action.Posted) {
-                    rounds.Add(new Round(new List<Player>(players), tableCards));
-                }//if
+                
+                if (name == playingAs && action != Player.Action.SmallBlind && action != Player.Action.BigBlind) {
+                    rounds.Add(new Round(new List<Player>(players), tableCards, action));
+                } else {
+                    players.Find(player => { return player.Name == name; }).LastAction = action;
+                }//else
             } else if (dealingRegex.IsMatch(line)) {
                 tableCards.AddRange(ExtractCards(line));
 
