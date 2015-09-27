@@ -15,37 +15,41 @@ namespace LogParser {
         //[mLastAction, p1LastAction, ..., p8LastAction,
         // mCards,
         // tableCards,
-        // uncalled]
-        //[9, 8, 20, 1]
+        // uncalled,
+        // allowedActions]
+        //[9, 8, 20, 1, 4]
         public static double[] BuildState(List<Player> players, List<string> tableCards) {
-            var state = new double[1];
+            var state = new List<double>();
 
             var playingAs = players.Find(player => { return player.PlayingAs; });
             players.Remove(playingAs);
 
             //First populate with the our state
-            state[0] = Player.NormalizeAction(playingAs.LastAction);
+            state.Add(Player.NormalizeAction(playingAs.LastAction));
 
             //Populate with other players states
             var otherPlayersArray = GetOtherPlayersArray(players);
-            state = state.Concat(otherPlayersArray).ToArray();
+            state.AddRange(otherPlayersArray);
 
             //Populate with our cards
             var mCardsArray = Card.GetCardArray(playingAs.Cards, 2);
-            state = state.Concat(mCardsArray).ToArray();
+            state.AddRange(mCardsArray);
 
             //Now populate the table Cards
             var tableArray = Card.GetCardArray(tableCards, 5);
-            state = state.Concat(tableArray).ToArray();
+            state.AddRange(tableArray);
 
             //Add whether there is an uncalled amount (true or false)
-            if (players.Max(p => p.Contribution) - playingAs.Contribution > 0) {
-                state = state.Concat(new double[1] { 1.0 }).ToArray();
+            if (GetUncalledAmount(playingAs, players) > 0) {
+                state.Add(1.0);
             } else {
-                state = state.Concat(new double[1] { 0.0 }).ToArray();
+                state.Add(0.0);
             }//else
 
-            return state;
+            //Add allowed actions
+            state.AddRange(GetAllowedActionsNormalized(playingAs, players));
+
+            return state.ToArray();
         }//BuildState
 
         //[BuildState,
@@ -72,6 +76,22 @@ namespace LogParser {
 
             return state;
         }
+
+        public static int GetUncalledAmount(Player playingAs, List<Player> otherPlayers) {
+            return otherPlayers.Max(p => p.Contribution) - playingAs.Contribution;
+        }//GetUncalledAmount
+
+        public static Player.Action[] GetAllowedActions(Player playingAs, List<Player> otherPlayers) {
+            if (GetUncalledAmount(playingAs, otherPlayers) > 0) {
+                return new Player.Action[4] { Player.Action.Fold, Player.Action.Call, Player.Action.Raise, Player.Action.AllIn };
+            } else {
+                return new Player.Action[4] { Player.Action.Fold, Player.Action.Check, Player.Action.Bet, Player.Action.AllIn };
+            }//else
+        }//GetAllowedActionsArray
+
+        public static double[] GetAllowedActionsNormalized(Player playingAs, List<Player> otherPlayers) {
+            return GetAllowedActions(playingAs, otherPlayers).Select(a => Player.NormalizeIdeal(a)).ToArray();
+        }//GetAllowedActionsNormalized
 
         public string GetStateAsString() {
             return String.Join<double>(",", State);
