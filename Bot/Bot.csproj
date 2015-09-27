@@ -61,6 +61,7 @@
     <Compile Include="HttpHelper.cs" />
     <Compile Include="Messages\BeginGame.cs" />
     <Compile Include="Messages\ClientMessage.cs" />
+    <Compile Include="Messages\CloseTable.cs" />
     <Compile Include="Messages\DealCommunityCards.cs" />
     <Compile Include="Messages\DealHoleCards.cs" />
     <Compile Include="Messages\EliminatedMessage.cs" />

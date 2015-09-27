@@ -164,5 +164,9 @@ namespace Bot {
 
             return bot;
         }
+
+        public void CloseTable(CloseTable message) {
+            bots.Remove(GetBot(message.tableId));
+        }//CloseTable
     }//BotManager
 }

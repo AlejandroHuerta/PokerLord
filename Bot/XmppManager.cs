@@ -32,6 +32,7 @@ namespace Bot {
             void Eliminated(EliminatedMessage message);
             void DealCommunityCards(DealCommunityCards message);
             void DealHoleCards(DealHoleCards message);
+            void CloseTable(CloseTable message);
         }
 
         static private XmppManager instance;
@@ -90,7 +91,8 @@ namespace Bot {
                 messageHandler.Eliminated(eliminated);
                 break;
             case "CLOSE_TABLE":
-                Console.WriteLine(e.Message.Body);
+                CloseTable closeTable = JsonConvert.DeserializeObject<CloseTable>(e.Message.Body);
+                messageHandler.CloseTable(closeTable);
                 break;
             case "BEGIN_GAME":
                 BeginGame beginGame = JsonConvert.DeserializeObject<BeginGame>(e.Message.Body);
