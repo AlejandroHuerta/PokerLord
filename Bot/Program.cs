@@ -14,6 +14,7 @@ QRztjz083DrqFILH3RD8/g39CCA=";
 
 
         static void Main(string[] args) {
+            System.Console.SetWindowSize(111, 50);
             Matrix.License.LicenseManager.SetLicense(LIC);
 
             var username = "thtest1";
