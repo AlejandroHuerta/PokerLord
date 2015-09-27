@@ -20,6 +20,8 @@ namespace Bot {
             List<Player> Players { get; }
             void PlayerCards(List<List<string>> cards);
             void ClearTableCards();
+            void SetContribution(int seat, int amount);
+            void ClearContributions();
         }
 
         private static BotManager instance;
@@ -55,6 +57,10 @@ namespace Bot {
                 bots.Add(bot);
             }
             bot.SetPlayers(message.message.players);
+            if (message.message.holeCards != null) {
+                bot.PlayerCards(message.message.holeCards);
+            }//if
+            SetContribution(bot, message.message.gameParameters.contributedThisRound);
 
             if (message.message.activePlayer.seatNumber != null) {
                 bot.ActivePlayer((int)message.message.activePlayer.seatNumber);
@@ -64,6 +70,7 @@ namespace Bot {
         public void BeginGame(BeginGame message) {
             GetBot(message.tableId)?.ResetActions();
             GetBot(message.tableId)?.ClearTableCards();
+            GetBot(message.tableId)?.ClearContributions();
         }//BeginGame
 
         public void SetPlayers(SetPlayers message) {
@@ -113,11 +120,22 @@ namespace Bot {
                 break;
             }//switch
             
-            bot?.SetPlayerAction(message.message.seatNumber, action);
-            bot?.SetBalance(message.message.seatNumber, message.message.balance);
-            bot?.SetMinimumBet(message.message.minimumBet);
+            bot.SetPlayerAction(message.message.seatNumber, action);
+            bot.SetBalance(message.message.seatNumber, message.message.balance);
+            bot.SetMinimumBet(message.message.minimumBet);
+
+            SetContribution(bot, message.message.contributedThisRound);
+
             Console.WriteLine(bot?.ToString());
-        }
+        }//SetPlayerAction
+
+        void SetContribution(BotInterface bot, List<int?> contribution) {
+            for(int i = 0; i < contribution.Count; i++) {
+                if (contribution[i] != null) {
+                    bot.SetContribution(i, (int)contribution[i]);
+                }//if
+            }//for
+        }//SetContribution
 
         public void Eliminated(EliminatedMessage message) {
             bots.Remove(bots.Find(bot => { return bot.GetTableId() == message.tableId; }));
@@ -127,6 +145,8 @@ namespace Bot {
         public void DealCommunityCards(DealCommunityCards message) {
             var bot = GetBot(message.tableId);
             bot?.TableCards(message.message.cards);
+            bot?.ResetActions();
+            bot?.ClearContributions();
             Console.WriteLine(bot?.ToString());
         }
 

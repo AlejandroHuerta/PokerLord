@@ -37,6 +37,10 @@ namespace Bot {
             }
         }
 
+        public void ClearContributions() {
+            players.ForEach(p => p.Contribution = 0);
+        }//ClearContributions
+
         public void SetPlayers(List<StatePlayer> players) {
             this.players.Clear();
 
@@ -60,6 +64,10 @@ namespace Bot {
         public void SetPlayerAction(int seat, Player.Action action) {
             var player = players.Find(p => { return p.SeatNumber == seat; });
             player.LastAction = action;
+        }
+
+        public void SetContribution(int seat, int amount) {
+            players.Find(p => p.SeatNumber == seat).Contribution = amount;
         }
 
         public void SetBalance(int seat, int balance) {

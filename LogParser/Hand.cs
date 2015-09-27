@@ -25,6 +25,8 @@ namespace LogParser {
 
         static Regex dealingRegex = new Regex(@"Dealing ");
 
+        static Regex amountRegex = new Regex(@"\$[0-9]+");
+
         public List<Round> rounds { get; private set; }
 
         List<string> tableCards = new List<string>();
@@ -82,6 +84,7 @@ namespace LogParser {
         void BuildStateParser(string line) {
             string name;
             Player.Action action;
+            int amount = 0;
 
             if (isActionRegex.IsMatch(line)) {
                 name = nameRegex.Match(line).Value.Replace(": ", "");
@@ -89,35 +92,47 @@ namespace LogParser {
                     action = Player.Action.Fold;
                 } else if (allinRegex.IsMatch(line)) {
                     action = Player.Action.AllIn;
+                    amount = int.Parse(amountRegex.Match(line).Value.Replace("$", ""));
                 } else if (calledRegex.IsMatch(line)) {
                     action = Player.Action.Call;
+                    amount = int.Parse(amountRegex.Match(line).Value.Replace("$", ""));
                 } else if (checkedRegex.IsMatch(line)) {
                     action = Player.Action.Check;
                 } else if (betRegex.IsMatch(line)) {
                     action = Player.Action.Bet;
+                    amount = int.Parse(amountRegex.Match(line).Value.Replace("$", ""));
                 } else if (raisedRegex.IsMatch(line)) {
                     action = Player.Action.Raise;
+                    amount = int.Parse(amountRegex.Match(line).Value.Replace("$", ""));
                 } else if (postedRegex.IsMatch(line)) {
                     if (players.Exists(p => p.LastAction == Player.Action.SmallBlind)) {
                         action = Player.Action.BigBlind;
                     } else {
                         action = Player.Action.SmallBlind;
                     }//else
+                    amount = int.Parse(amountRegex.Match(line).Value.Replace("$", ""));
                 } else {
                     action = Player.Action.Out;
                     Console.WriteLine("Unknown action performed!");
                     Console.WriteLine(line);
                 }//else
-                
-                if (name == playingAs && action != Player.Action.SmallBlind && action != Player.Action.BigBlind) {
+
+                var player = players.Find(p => p.Name == name);
+
+                if (player.PlayingAs && action != Player.Action.SmallBlind && action != Player.Action.BigBlind) {
                     rounds.Add(new Round(new List<Player>(players), tableCards, action));
-                } else {
-                    players.Find(player => { return player.Name == name; }).LastAction = action;
+                } else {                    
+                    player.LastAction = action;
                 }//else
+
+                player.Contribution += amount;
             } else if (dealingRegex.IsMatch(line)) {
                 tableCards.AddRange(ExtractCards(line));
 
-                players.ForEach(player => { player.LastAction = Player.Action.Out; });
+                players.ForEach(player => {
+                    player.LastAction = Player.Action.Out;
+                    player.Contribution = 0;
+                });
             }//else if
         }//BuildStateParser
 

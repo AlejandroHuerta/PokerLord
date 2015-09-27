@@ -14,8 +14,9 @@ namespace LogParser {
 
         //[mLastAction, p1LastAction, ..., p8LastAction,
         // mCards,
-        // tableCards]
-        //[9, 8, 20]
+        // tableCards,
+        // uncalled]
+        //[9, 8, 20, 1]
         public static double[] BuildState(List<Player> players, List<string> tableCards) {
             var state = new double[1];
 
@@ -36,6 +37,13 @@ namespace LogParser {
             //Now populate the table Cards
             var tableArray = Card.GetCardArray(tableCards, 5);
             state = state.Concat(tableArray).ToArray();
+
+            //Add whether there is an uncalled amount (true or false)
+            if (players.Max(p => p.Contribution) - playingAs.Contribution > 0) {
+                state = state.Concat(new double[1] { 1.0 }).ToArray();
+            } else {
+                state = state.Concat(new double[1] { 0.0 }).ToArray();
+            }//else
 
             return state;
         }//BuildState

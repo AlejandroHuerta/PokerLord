@@ -36,6 +36,7 @@ namespace LogParser {
         public Action LastAction { get; set; }
         public int Balance { get; set; }
         public int SeatNumber { get; set; }
+        public int Contribution { get; set; }
 
         public Player(string name, bool playingAs, int seatNumber = 0) {
             Name = name;
@@ -43,6 +44,7 @@ namespace LogParser {
             LastAction = Action.Out;
             PlayingAs = playingAs;
             SeatNumber = seatNumber;
+            Contribution = 0;
         }
 
         public static Action DoubleToIdeal(double value) {
@@ -79,7 +81,7 @@ namespace LogParser {
         }
 
         public override string ToString() {
-            return string.Format("Name: {0,-12} Seat Number: {1} Cards: [{2}][{3}] Balance: {4}", Name, SeatNumber, Cards[0], Cards.Count > 1 ? Cards[1] : "--", Balance);
+            return string.Format("Name: {0,-12} Seat Number: {1} Cards: [{2}][{3}] Last Action: {4,-10} Balance: {5,6} Contribution: {6}", Name, SeatNumber, Cards[0], Cards.Count > 1 ? Cards[1] : "--", LastAction, Balance, Contribution);
         }
     }
 }
