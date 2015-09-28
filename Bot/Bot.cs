@@ -96,14 +96,39 @@ namespace Bot {
         }//PlayerCards
 
         void Act() {
-            var tempPlayers = new List<Player>(players);
-
-            var state = Round.BuildState(tempPlayers, tableCards);
+            var state = Round.BuildState(new List<Player>(players), tableCards);
 
             var computed = HiveMind.Instance.Compute(state);
             var action = Player.DoubleToIdeal(computed);
             Console.WriteLine("Computed action: {0}", action);
-            
+
+            var tempPlayers = new List<Player>(players);
+            var playingAs = tempPlayers.Find(p => p.PlayingAs);
+            tempPlayers.Remove(playingAs);
+
+            if (!Round.GetAllowedActions(playingAs, tempPlayers).Contains(action)) {
+                Player.Action translation;
+                switch(action) {
+                case Player.Action.Bet:
+                    translation = Player.Action.Raise;
+                    break;
+                case Player.Action.Raise:
+                    translation = Player.Action.Bet;
+                    break;
+                case Player.Action.Check:
+                    translation = Player.Action.Call;
+                    break;
+                case Player.Action.Call:
+                    translation = Player.Action.Check;
+                    break;
+                default:
+                    translation = Player.Action.Fold;
+                    break;
+                }//switch
+                Console.WriteLine("{0,6} is not an allowed action! Action will be translated to {1}", action, translation);
+                action = translation;
+            }//if
+
             int amount = 0;
             switch (action) {
             case Player.Action.AllIn:
