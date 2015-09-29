@@ -136,8 +136,7 @@ namespace Bot {
             return xmppMessage["message"]["action"].ToString();
         }
 
-        public void sendAction(Player.Action action, string tableId, int amount = 0) {
-            Console.WriteLine("Sending action: {0} to table: {1}", action, tableId);
+        public void SendAction(Player.Action action, string tableId, int amount = 0) {
             ClientMessage clientMessage = new ClientMessage();
             clientMessage.messageType = "GAME";
             clientMessage.tableId = tableId;
@@ -168,13 +167,26 @@ namespace Bot {
                 break;
             }//switch
 
+            SendMessage(clientMessage);
+        }//sendCommand
+
+        public void SendUnsubscribe(string tableId) {
+            ClientMessage clientMessage = new ClientMessage();
+            clientMessage.messageType = "GAME";
+            clientMessage.tableId = tableId;
+            clientMessage.message.action = "UNSUBSCRIBE";
+
+            SendMessage(clientMessage);
+        }//SendUnsubscribe
+
+        void SendMessage(ClientMessage clientMessage) {
             Message message = new Message();
             message.From = xmppClient.Username + "@" + domain;
             message.To = gameDomain;
             message.Body = JsonConvert.SerializeObject(clientMessage);
-            
+
             xmppClient.Send(message);
-        }//sendCommand
+        }//SendMessage
 
         public void RequestState(string tableId) {
             var stateRequest = new StateRequest();

@@ -163,7 +163,7 @@ namespace Bot {
             Console.WriteLine("Waiting for {0}ms before acting...", sleepTime);
             System.Threading.Thread.Sleep(sleepTime);
 
-            XmppManager.Instance.sendAction(action, TableId, amount);
+            XmppManager.Instance.SendAction(action, TableId, amount);
         }//Act
 
         public override string ToString() {

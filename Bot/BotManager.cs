@@ -148,6 +148,7 @@ namespace Bot {
 
         public void Eliminated(EliminatedMessage message) {
             bots.Remove(GetBot(message.tableId));
+            XmppManager.Instance.SendUnsubscribe(message.tableId);
             Console.WriteLine("Bot at table {0} finished in {1} place", message.tableId, message.message.finishingRank);
         }//Eliminated
 
