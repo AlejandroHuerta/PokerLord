@@ -73,6 +73,7 @@
     <Compile Include="Messages\StatePlayer.cs" />
     <Compile Include="Messages\StateRequest.cs" />
     <Compile Include="Messages\TableStateMessage.cs" />
+    <Compile Include="Messages\Timeout.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TokenInfo.cs" />

@@ -20,12 +20,6 @@ namespace Bot.Messages {
             public List<int?> contributedThisRound { get; set; }
             public int minimumBet { get; set; }
             public Timeout timeout { get; set; }
-
-            public class Timeout {
-                public string now { get; set; }
-                public string started { get; set; }
-                public string ends { get; set; }
-            }
         }
     }
 }

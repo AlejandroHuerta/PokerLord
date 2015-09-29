@@ -12,7 +12,7 @@ namespace Bot {
             string GetTableId();
             void ResetActions();
             void SetPlayers(List<StatePlayer> players);
-            void ActivePlayer(int seat);
+            void ActivePlayer(int seat, float timeout);
             void SetPlayerAction(int seat, Player.Action action);
             void TableCards(List<string> cards);
             void SetBalance(int seat, int balance);
@@ -65,9 +65,16 @@ namespace Bot {
             }
 
             if (message.message.activePlayer.seatNumber != null) {
-                bot.ActivePlayer((int)message.message.activePlayer.seatNumber);
+                bot.ActivePlayer((int)message.message.activePlayer.seatNumber, TimeToAct(message.message.activePlayer.timeout));
             }//if
         }//TableState
+
+        float TimeToAct(Timeout timeout) {
+            var now = DateTime.Parse(timeout.now);
+            var ends = DateTime.Parse(timeout.ends);
+
+            return (float)(ends - now).TotalSeconds;
+        }//TimeToAct
 
         public void BeginGame(BeginGame message) {
             GetBot(message.tableId)?.ResetActions();
@@ -80,7 +87,7 @@ namespace Bot {
         }
 
         public void SetActivePlayer(SetActivePlayer message) {
-            GetBot(message.tableId)?.ActivePlayer(message.message.seatNumber);
+            GetBot(message.tableId)?.ActivePlayer(message.message.seatNumber, TimeToAct(message.message.timeout));
         }
 
         public void SetPlayerAction(SetPlayerAction message) {

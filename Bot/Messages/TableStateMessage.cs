@@ -34,12 +34,6 @@ namespace Bot.Messages {
             public class ActivePlayer {
                 public int? seatNumber { get; set; }
                 public Timeout timeout { get; set; }
-
-                public class Timeout {
-                    public string now { get; set; }
-                    public string started { get; set; }
-                    public string ends { get; set; }
-                }
             }
         }
 

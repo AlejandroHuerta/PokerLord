@@ -6,6 +6,8 @@ using System.Linq;
 
 namespace Bot {
     class Bot : BotManager.BotInterface {
+        static Random random = new Random();
+
         public string TableId { get; private set; }
 
         List<string> tableCards;
@@ -59,12 +61,12 @@ namespace Bot {
             }//foreach
         }//SetPlayers
 
-        public void ActivePlayer(int seat) {
+        public void ActivePlayer(int seat, float timeout) {
             var activePlayer = players.Find(player => { return player.SeatNumber == seat; });
             if (activePlayer != null) {
                 Console.WriteLine(activePlayer.Name + " is active.");
                 if (activePlayer.PlayingAs) {
-                    Act();
+                    Act(timeout);
                 }//if
             }//if
         }//ActivePlayer
@@ -106,7 +108,7 @@ namespace Bot {
             }//for
         }//PlayerCards
 
-        void Act() {
+        void Act(float timeout) {
             var state = Round.BuildState(new List<Player>(players), tableCards);
 
             var computed = HiveMind.Instance.Compute(state);
@@ -156,6 +158,10 @@ namespace Bot {
                 Console.WriteLine("Out should not be possible! HiveMind returned {0}", computed);
                 break;
             }//switch
+
+            var sleepTime = (int)(random.NextDouble() * timeout * 1000);
+            Console.WriteLine("Waiting for {0}ms before acting...", sleepTime);
+            System.Threading.Thread.Sleep(sleepTime);
 
             XmppManager.Instance.sendAction(action, TableId, amount);
         }//Act
