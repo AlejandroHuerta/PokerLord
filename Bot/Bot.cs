@@ -138,7 +138,7 @@ namespace Bot {
                     translation = Player.Action.Fold;
                     break;
                 }//switch
-                Console.WriteLine("{0,6} is not an allowed action! Action will be translated to {1}", action, translation);
+                Console.WriteLine("{0,-6} is not an allowed action! Action will be translated to {1}", action, translation);
                 action = translation;
             }//if
 
