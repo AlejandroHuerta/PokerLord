@@ -135,6 +135,7 @@ namespace Bot {
 
             SetContribution(bot, message.message.contributedThisRound);
 
+            Console.Clear();
             Console.WriteLine(bot?.ToString());
         }//SetPlayerAction
 
@@ -157,12 +158,14 @@ namespace Bot {
             bot?.TableCards(message.message.cards);
             bot?.ResetActions();
             bot?.ClearContributions();
+            Console.Clear();
             Console.WriteLine(bot?.ToString());
         }
 
         public void DealHoleCards(DealHoleCards message) {
             var bot = GetBot(message.tableId);
             bot?.PlayerCards(message.message.cards);
+            Console.Clear();
             Console.WriteLine(bot?.ToString());
         }
 
