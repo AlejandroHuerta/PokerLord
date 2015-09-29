@@ -57,6 +57,7 @@
   <ItemGroup>
     <Compile Include="Bot.cs" />
     <Compile Include="BotManager.cs" />
+    <Compile Include="Config.cs" />
     <Compile Include="HiveMind.cs" />
     <Compile Include="HttpHelper.cs" />
     <Compile Include="Messages\BeginGame.cs" />

@@ -1,6 +1,4 @@
-﻿#define DEVELOPMENT
-
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,14 +9,6 @@ using System.Threading.Tasks;
 
 namespace Bot {
     class HttpHelper {
-#if DEVELOPMENT
-        public static string DOMAIN = "https://devplay.texasholdem.com/";
-        string uri = "https://devlogin.texasholdem.com/oauth/token";
-#else
-        public static string DOMAIN = "https://play.texasholdem.com/";
-        string uri = "https://login.texasholdem.com/oauth/token";
-#endif
-
         private static HttpHelper instance;
 
         static public HttpHelper Instance {
@@ -41,7 +31,7 @@ namespace Bot {
 
             byte[] postBytes = Encoding.ASCII.GetBytes(post_data);
 
-            HttpWebRequest request = setupPostRequest(uri);
+            HttpWebRequest request = setupPostRequest(Config.LOGIN_URI);
             request.ContentLength = postBytes.Length;
             var requestStream = request.GetRequestStream();
 

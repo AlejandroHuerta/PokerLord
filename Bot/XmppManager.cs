@@ -1,4 +1,4 @@
-﻿#define DEVELOPMENT
+﻿
 
 using Bot.Messages;
 using LogParser;
@@ -14,14 +14,6 @@ using System.Threading.Tasks;
 
 namespace Bot {
     class XmppManager {
-#if DEVELOPMENT
-        string domain = "players.texasholdem.com";
-        string gameDomain = "game@players.texasholdem.com";
-#else
-        string domain = "players.beta.texasholdem.com";
-        string gameDomain = "gameserver3@backend.beta.texasholdem.com";
-#endif
-
         public interface MessageHandler {
             void OpenTable(OpenTableMessage message);
             void TableState(TableStateMessage message);
@@ -56,7 +48,7 @@ namespace Bot {
             xmppClient.OnMessage += OnMessage;
 
             xmppClient.Resource = Guid.NewGuid().ToString();
-            xmppClient.SetXmppDomain(domain);
+            xmppClient.SetXmppDomain(Config.XMPP_DOMAIN);
         }
 
         public void SetMessageHandler(MessageHandler handler) {
@@ -181,8 +173,8 @@ namespace Bot {
 
         void SendMessage(ClientMessage clientMessage) {
             Message message = new Message();
-            message.From = xmppClient.Username + "@" + domain;
-            message.To = gameDomain;
+            message.From = xmppClient.Username + "@" + Config.XMPP_DOMAIN;
+            message.To = Config.XMPP_GAME_DOMAIN;
             message.Body = JsonConvert.SerializeObject(clientMessage);
 
             xmppClient.Send(message);
@@ -194,8 +186,8 @@ namespace Bot {
             stateRequest.tableId = tableId;
 
             Message message = new Message();
-            message.From = xmppClient.Username + "@" + domain;
-            message.To = gameDomain;
+            message.From = xmppClient.Username + "@" + Config.XMPP_DOMAIN;
+            message.To = Config.XMPP_GAME_DOMAIN;
             message.Body = JsonConvert.SerializeObject(stateRequest);
 
             xmppClient.Send(message);
