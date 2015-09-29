@@ -78,7 +78,7 @@ namespace LogParser {
         }
 
         public static int GetUncalledAmount(Player playingAs, List<Player> otherPlayers) {
-            return otherPlayers.Max(p => p.Contribution) - playingAs.Contribution;
+            return otherPlayers.Any() ? otherPlayers.Max(p => p.Contribution) - playingAs.Contribution : 0;
         }//GetUncalledAmount
 
         public static Player.Action[] GetAllowedActions(Player playingAs, List<Player> otherPlayers) {

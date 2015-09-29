@@ -60,7 +60,9 @@ namespace Bot {
             if (message.message.holeCards != null) {
                 bot.PlayerCards(message.message.holeCards);
             }//if
-            SetContribution(bot, message.message.gameParameters.contributedThisRound);
+            if (message.message.gameParameters.contributedThisRound != null) {
+                SetContribution(bot, message.message.gameParameters.contributedThisRound);
+            }
 
             if (message.message.activePlayer.seatNumber != null) {
                 bot.ActivePlayer((int)message.message.activePlayer.seatNumber);
@@ -84,7 +86,7 @@ namespace Bot {
         public void SetPlayerAction(SetPlayerAction message) {
             Player.Action action = Player.Action.Out;
 
-            var bot = bots.Find(b => { return b.GetTableId() == message.tableId; });
+            var bot = GetBot(message.tableId);
             if (bot == null) {
                 return;
             }//if
@@ -138,7 +140,7 @@ namespace Bot {
         }//SetContribution
 
         public void Eliminated(EliminatedMessage message) {
-            bots.Remove(bots.Find(bot => { return bot.GetTableId() == message.tableId; }));
+            bots.Remove(GetBot(message.tableId));
             Console.WriteLine("Bot at table {0} finished in {1} place", message.tableId, message.message.finishingRank);
         }//Eliminated
 

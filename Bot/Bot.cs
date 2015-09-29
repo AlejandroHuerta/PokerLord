@@ -42,14 +42,22 @@ namespace Bot {
         }//ClearContributions
 
         public void SetPlayers(List<StatePlayer> players) {
-            this.players.Clear();
-
+            //Addition
             foreach (var player in players) {
-                var playerObject = new Player(player.username, player.username == playingAs, player.seatNumber);
-                playerObject.Balance = player.balance;
-                this.players.Add(playerObject);
-            }
-        }
+                if (!this.players.Exists(p => p.Name == player.username)) {
+                    var playerObject = new Player(player.username, player.username == playingAs, player.seatNumber);
+                    playerObject.Balance = player.balance;
+                    this.players.Add(playerObject);
+                }//if
+            }//foreach
+
+            //Subtraction
+            foreach(var player in this.players.Reverse<Player>()) {
+                if (!players.Exists(p => p.username == player.Name)) {
+                    this.players.Remove(player);
+                }//if
+            }//foreach
+        }//SetPlayers
 
         public void ActivePlayer(int seat) {
             var activePlayer = players.Find(player => { return player.SeatNumber == seat; });
@@ -90,8 +98,11 @@ namespace Bot {
         public void PlayerCards(List<List<string>> cards) {
             for(int i = 0; i < cards.Count; i++) {
                 if (cards[i] != null) {
-                    players.Find(p => p.SeatNumber == i).Cards = cards[i];
-                }
+                    var player = players.SingleOrDefault(p => p.SeatNumber == i);
+                    if (player != null) {
+                        player.Cards = cards[i];
+                    }//if
+                }//if
             }//for
         }//PlayerCards
 
