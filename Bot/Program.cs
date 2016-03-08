@@ -17,8 +17,10 @@ QRztjz083DrqFILH3RD8/g39CCA=";
             System.Console.SetWindowSize(111, 50);
             Matrix.License.LicenseManager.SetLicense(LIC);
 
-            var username = "thtest1";
-            var password = "test123";
+            System.Console.Write("Username: ");
+            var username = System.Console.ReadLine();
+            System.Console.Write("Password: ");
+            var password = System.Console.ReadLine();
 
             BotManager.Instance.SetUsername(username);
             XmppManager.Instance.SetMessageHandler(BotManager.Instance);
