@@ -22,6 +22,8 @@ namespace Bot {
             void ClearTableCards();
             void SetContribution(int seat, int amount);
             void ClearContributions();
+            void AddPot(int amount);
+            void ResetPot();
         }
 
         private static BotManager instance;
@@ -77,9 +79,11 @@ namespace Bot {
         }//TimeToAct
 
         public void BeginGame(BeginGame message) {
-            GetBot(message.tableId)?.ResetActions();
-            GetBot(message.tableId)?.ClearTableCards();
-            GetBot(message.tableId)?.ClearContributions();
+            var bot = GetBot(message.tableId);
+            bot?.ResetActions();
+            bot?.ClearTableCards();
+            bot?.ClearContributions();
+            bot?.ResetPot();
         }//BeginGame
 
         public void SetPlayers(SetPlayers message) {
@@ -87,8 +91,9 @@ namespace Bot {
         }
 
         public void SetActivePlayer(SetActivePlayer message) {
-            GetBot(message.tableId)?.ActivePlayer(message.message.seatNumber, TimeToAct(message.message.timeout));
-        }
+            var bot = GetBot(message.tableId);
+            bot?.ActivePlayer(message.message.seatNumber, TimeToAct(message.message.timeout));
+        }//SetActivePlayer
 
         public void SetPlayerAction(SetPlayerAction message) {
             Player.Action action = Player.Action.Out;
@@ -98,24 +103,30 @@ namespace Bot {
                 return;
             }//if
 
+            var amount = 0;
+
             switch (message.message.actionName) {
             case "CALL":
                 action = Player.Action.Call;
+                amount = message.message.amount;
                 break;
             case "FOLD":
                 action = Player.Action.Fold;
                 break;
             case "BET":
                 action = Player.Action.Bet;
+                amount = message.message.amount;
                 break;
             case "CHECK":
                 action = Player.Action.Check;
                 break;
             case "ALLIN":
                 action = Player.Action.AllIn;
+                amount = message.message.amount;
                 break;
             case "RAISE":
                 action = Player.Action.Raise;
+                amount = message.message.amount;
                 break;
             case "POST":
                 if (bot.Players.Exists(p => p.LastAction == Player.Action.SmallBlind)) {
@@ -123,6 +134,8 @@ namespace Bot {
                 } else {
                     action = Player.Action.SmallBlind;
                 }//else
+
+                amount = message.message.amount;
                 break;
             default:
                 Console.WriteLine("Action {0} is not being handled", message.message.actionName);
@@ -134,6 +147,8 @@ namespace Bot {
             bot.SetMinimumBet(message.message.minimumBet);
 
             SetContribution(bot, message.message.contributedThisRound);
+
+            bot.AddPot(amount);
 
             Console.Clear();
             Console.WriteLine(bot?.ToString());

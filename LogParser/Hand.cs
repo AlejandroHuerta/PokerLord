@@ -139,7 +139,7 @@ namespace LogParser {
                 var player = players.Find(p => p.Name == name);
 
                 if (player.PlayingAs && action != Player.Action.SmallBlind && action != Player.Action.BigBlind) {
-                    rounds.Add(new Round(new List<Player>(players), tableCards, action));
+                    rounds.Add(new Round(new List<Player>(players), tableCards, action, pot));
                 } else {                    
                     player.LastAction = action;
                 }//else

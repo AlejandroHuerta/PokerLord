@@ -23,6 +23,8 @@ namespace Bot {
 
         int minBet = 0;
 
+        int pot = 0;
+
         public Bot(string tableId, string username) {
             TableId = tableId;
             playingAs = username;
@@ -54,7 +56,7 @@ namespace Bot {
             }//foreach
 
             //Subtraction
-            foreach(var player in this.players.Reverse<Player>()) {
+            foreach (var player in this.players.Reverse<Player>()) {
                 if (!players.Exists(p => p.username == player.Name)) {
                     this.players.Remove(player);
                 }//if
@@ -96,9 +98,9 @@ namespace Bot {
         public void ClearTableCards() {
             tableCards.Clear();
         }
-        
+
         public void PlayerCards(List<List<string>> cards) {
-            for(int i = 0; i < cards.Count; i++) {
+            for (int i = 0; i < cards.Count; i++) {
                 if (cards[i] != null) {
                     var player = players.SingleOrDefault(p => p.SeatNumber == i);
                     if (player != null) {
@@ -108,8 +110,16 @@ namespace Bot {
             }//for
         }//PlayerCards
 
+        public void AddPot(int amount) {
+            pot += amount;
+        }//SetPot
+
+        public void ResetPot() {
+            pot = 0;
+        }//ResetPot
+
         void Act(float timeout) {
-            var state = Round.BuildState(new List<Player>(players), tableCards);
+            var state = Round.BuildState(new List<Player>(players), tableCards, pot);
 
             var computed = HiveMind.Instance.Compute(state);
             var action = Player.DoubleToIdeal(computed);

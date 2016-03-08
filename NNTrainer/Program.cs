@@ -16,6 +16,8 @@ using Encog.Persist;
 namespace NNTrainer {
     class Program {
         static void Main(string[] args) {
+            const int INPUT_VARIABLES = 52;
+
             var inputs = new List<double[]>();
             var outputs = new List<double[]>();
 
@@ -25,8 +27,8 @@ namespace NNTrainer {
                 var lineOutput = new List<double>();
 
                 var weights = line.Split(new char[] { ',' });
-                lineInput.AddRange(weights.Take(42).Select(value => double.Parse(value)));
-                lineOutput.Add(double.Parse(weights[42]));
+                lineInput.AddRange(weights.Take(INPUT_VARIABLES).Select(value => double.Parse(value)));
+                lineOutput.Add(double.Parse(weights[INPUT_VARIABLES]));
 
                 inputs.Add(lineInput.ToArray());
                 outputs.Add(lineOutput.ToArray());
@@ -36,8 +38,9 @@ namespace NNTrainer {
             var nnIdeal = outputs.ToArray();
 
             var network = new BasicNetwork();
-            network.AddLayer(new BasicLayer(null, true, 42));
-            network.AddLayer(new BasicLayer(new ActivationSigmoid(), true, 150));
+            network.AddLayer(new BasicLayer(null, true, INPUT_VARIABLES));
+            network.AddLayer(new BasicLayer(new ActivationSigmoid(), true, 200));
+            network.AddLayer(new BasicLayer(new ActivationSigmoid(), true, 100));
             network.AddLayer(new BasicLayer(new ActivationSigmoid(), false, 1));
             network.Structure.FinalizeStructure();
             network.Reset();

@@ -6,19 +6,23 @@ using System.Threading.Tasks;
 
 namespace LogParser {
     public class Round {
+        const double CHIP_STACK_MAX = 10000000;
+
         public double[] State { get; private set; }
 
-        public Round(List<Player> players, List<string> tableCards, Player.Action action) {
-            State = BuildTrainingState(players, tableCards, action);
+        public Round(List<Player> players, List<string> tableCards, Player.Action action, int pot) {
+            State = BuildTrainingState(players, tableCards, action, pot);
         }//Round
 
         //[mLastAction, p1LastAction, ..., p8LastAction,
         // mCards,
         // tableCards,
         // uncalled,
-        // allowedActions]
-        //[9, 8, 20, 1, 4]
-        public static double[] BuildState(List<Player> players, List<string> tableCards) {
+        // allowedActions,
+        // balances,
+        // pot]
+        //[9, 8, 20, 1, 4, 9, 1]
+        public static double[] BuildState(List<Player> players, List<string> tableCards, int pot) {
             var state = new List<double>();
 
             var playingAs = players.Find(player => { return player.PlayingAs; });
@@ -49,14 +53,21 @@ namespace LogParser {
             //Add allowed actions
             state.AddRange(GetAllowedActionsNormalized(playingAs, players));
 
+            //Add balances
+            state.Add(NormalizeChipstack(playingAs.Balance));
+            state.AddRange(GetOtherPlayerBalances(players));
+
+            //Add the pot
+            state.Add(NormalizeChipstack(pot));
+
             return state.ToArray();
         }//BuildState
 
         //[BuildState,
         // idealAction]
         //[, 1] 
-        public static double[] BuildTrainingState(List<Player> players, List<string> tableCards, Player.Action IdealAction) {
-            var state = BuildState(players, tableCards);
+        public static double[] BuildTrainingState(List<Player> players, List<string> tableCards, Player.Action IdealAction, int pot) {
+            var state = BuildState(players, tableCards, pot);
 
             //Populate with ideal action
             state = state.Concat(new double[1] { Player.NormalizeIdeal(IdealAction) }).ToArray();
@@ -75,7 +86,20 @@ namespace LogParser {
             }//for
 
             return state;
-        }
+        }//GetOtherPlayersArray
+
+        public static double[] GetOtherPlayerBalances(List<Player> otherPlayers) {
+            var state = new double[8];
+
+            otherPlayers.Sort((x, y) => { return Player.NormalizeAction(x.LastAction).CompareTo(Player.NormalizeAction(y.LastAction)); });
+            //Now populate everyone else's state
+            for (int i = 0; i < otherPlayers.Count; i++) {
+                var playerState = NormalizeChipstack(otherPlayers[i].Balance);
+                state[i] = playerState;
+            }//for
+
+            return state;
+        }//GetOtherPlayerBalances
 
         public static int GetUncalledAmount(Player playingAs, List<Player> otherPlayers) {
             return otherPlayers.Any() ? otherPlayers.Max(p => p.Contribution) - playingAs.Contribution : 0;
@@ -96,5 +120,9 @@ namespace LogParser {
         public string GetStateAsString() {
             return String.Join<double>(",", State);
         }
+
+        public static double NormalizeChipstack(int chipAmount) {
+            return chipAmount / CHIP_STACK_MAX;
+        }//NormalizeChipstack
     }//Round
 }//LogParser
