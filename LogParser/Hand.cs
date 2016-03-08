@@ -27,6 +27,12 @@ namespace LogParser {
 
         static Regex amountRegex = new Regex(@"\$[0-9]+");
 
+        static Regex balanceLineRegex = new Regex(@"Player: [a-z0-9]+, SeatNumber: [0-9], Balance: [0-9]+$");
+        static Regex balancePlayerRegex = new Regex(@"Player: [a-z0-9]+");
+        static Regex balanceBalanceRegex = new Regex(@"Balance: [0-9]+$");
+
+        static Regex playerCardsRegex = new Regex(@"Player cards are:");
+
         public List<Round> rounds { get; private set; }
 
         List<string> tableCards = new List<string>();
@@ -36,6 +42,8 @@ namespace LogParser {
 
         delegate void LineParser(string line);
         LineParser currentParser;
+
+        int pot = 0;
 
         public Hand(List<string> lines) {
             playingAs = "n/a";
@@ -63,23 +71,34 @@ namespace LogParser {
         }//Parse
 
         void GettingPlayersParser(string line) {
-            var match = playerRegex.Match(line);
+            var match = balanceLineRegex.Match(line);
             if (match.Success) {
-                var name = match.Value.Replace(" : [", "");
+                var name = balancePlayerRegex.Match(line).Value.Replace("Player: ", "");
                 Player player;
                 if (name == playingAs) {
                     player = new Player(name, true);
-                    player.Cards = ExtractCards(line);
                 }
                 else {
                     player = new Player(name, false);
-                }
+                }//else
+
+                player.Balance = int.Parse(balanceBalanceRegex.Match(line).Value.Replace("Balance: ", ""));
+
                 players.Add(player);
-            }
-            else if (dealerPositionRegex.IsMatch(line)) {
-                currentParser = BuildStateParser;
+            } else if (playerCardsRegex.IsMatch(line)) {
+                currentParser = GettingCardsParser;
             }//else if
         }//GettingPlayersParser
+
+        void GettingCardsParser(string line) {
+            var match = playerRegex.Match(line);
+            if (match.Success) {
+                var player = players.Single(p => p.Name == match.Value.Replace(" : [", ""));
+                player.Cards = ExtractCards(line);
+            } else if (dealerPositionRegex.IsMatch(line)) {
+                currentParser = BuildStateParser;
+            }//else if
+        }//GettingCardsParser
 
         void BuildStateParser(string line) {
             string name;
@@ -126,6 +145,8 @@ namespace LogParser {
                 }//else
 
                 player.Contribution += amount;
+                player.Balance -= amount;
+                pot += amount;
             } else if (dealingRegex.IsMatch(line)) {
                 tableCards.AddRange(ExtractCards(line));
 

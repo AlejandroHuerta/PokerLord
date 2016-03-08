@@ -48,8 +48,8 @@ namespace LogParser {
             var lines = new List<string>();
             HandSearchState state = HandSearchState.Looking;
 
-            var beginOfHandRegex = new Regex(@"Hand number: \d");
-            var endOfHandRegex = new Regex(@"The players in this hand: ");
+            var beginOfHandRegex = new Regex(@"The players in this hand:");
+            var endOfHandRegex = new Regex(@"Time until stakes level change");
             foreach (var table in Tables) {
                 var fileLines = File.ReadLines(table);
                 foreach (var line in fileLines) {
