@@ -159,7 +159,7 @@ namespace Bot {
                 break;
             }//switch
 
-            var sleepTime = (int)(random.NextDouble() * timeout * 1000);
+            var sleepTime = (int)(random.NextDouble() * timeout * 0.25 * 1000);
             Console.WriteLine("Waiting for {0}ms before acting...", sleepTime);
             System.Threading.Thread.Sleep(sleepTime);
 
