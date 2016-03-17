@@ -17,6 +17,7 @@ namespace NNTrainer {
     class Program {
         static void Main(string[] args) {
             const int INPUT_VARIABLES = 52;
+            const double TRAINING_ERROR = 0.0001;
 
             var inputs = new List<double[]>();
             var outputs = new List<double[]>();
@@ -41,6 +42,7 @@ namespace NNTrainer {
             network.AddLayer(new BasicLayer(null, true, INPUT_VARIABLES));
             network.AddLayer(new BasicLayer(new ActivationSigmoid(), true, 200));
             network.AddLayer(new BasicLayer(new ActivationSigmoid(), true, 100));
+            network.AddLayer(new BasicLayer(new ActivationSigmoid(), true, 50));
             network.AddLayer(new BasicLayer(new ActivationSigmoid(), false, 1));
             network.Structure.FinalizeStructure();
             network.Reset();
@@ -55,7 +57,7 @@ namespace NNTrainer {
                 train.Iteration();
                 Console.WriteLine("Epoch #{0,-10} Error: {1}", epoch, train.Error);
                 epoch++;
-            } while (train.Error > 0.01);
+            } while (train.Error > TRAINING_ERROR);
 
             EncogDirectoryPersistence.SaveObject(new FileInfo("network.eg"), network);
 
